@@ -1,0 +1,112 @@
+---
+title: "Introduction to irtlink"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to irtlink}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+irtlink estimates trends in the mean and standard deviation of
+latent ability distributions across the time points of educational
+assessments, and ability distribution differences across linked
+groups, with unidimensional item response theory (IRT) models.
+Under differential item functioning (DIF), the linked estimates
+depend on the selected common items. The package estimates this
+linking error together with the standard error.
+
+```{r}
+library(irtlink)
+```
+
+## Simulated data
+
+`sim_trend_data()` generates dichotomous responses for several
+groups with a known trend. `overlap` sets the proportion of common
+items between successive groups.
+
+```{r}
+set.seed(123)
+d <- sim_trend_data(n_groups = 3, N = 1000, I = 20, overlap = 1,
+                    mu = c(0, 0.3, 0.5), sigma = c(1, 1.2, 1.5),
+                    dif = "random", dif_pct = 1, dif_sd = 0.3)
+str(d, max.level = 1)
+```
+
+## Calibration
+
+`calibrate()` fits one IRT model per group on the internal marginal
+maximum likelihood EM engine. The default is the 2PL with
+`calibration = "separate"`. The alternatives are `"concurrent"`,
+`"fixed"` (fixed item parameter calibration, FIPC), and
+`"regularized"` (regularized calibration with a smooth Bayesian
+information criterion, SBIC).
+
+```{r}
+cal <- calibrate(d)
+cal
+```
+
+## Linking
+
+`link_groups()` places the separately calibrated groups on one
+common scale. `approach` selects the chain or the joint composition.
+`method` selects mean-mean, mean-geometric mean, Haberman, Haebara,
+or Stocking-Lord linking.
+
+```{r}
+link <- link_groups(cal, approach = "chain", method = "mgm")
+link$trend
+```
+
+`ref` selects the reference group of the reported trend.
+
+```{r}
+link_groups(cal, approach = "chain", method = "mgm", ref = 2)$trend
+```
+
+## Linking error
+
+`linking_error()` estimates the linking error of the linked means
+and standard deviations. `method` selects the delete-one item
+jackknife, the approximate jackknife, or a sandwich estimator.
+
+```{r}
+linking_error(link, method = "jackknife")$le
+linking_error(link, method = "sandwich_osw")$le
+```
+
+## Full pipeline
+
+`estimate_trend()` runs calibration, linking, and error estimation
+in one call. The bias-corrected methods decompose the uncertainty
+into standard error (`se`), linking error (`le`, `le_bc`), and total
+error (`te`, `te_bc`).
+
+```{r}
+tr <- estimate_trend(d, calibration = "separate", approach = "chain",
+                     link = "mgm", le = "sandwich_osw_bc")
+round(tr$trend[, c("group", "mu", "sigma", "se", "le", "le_bc",
+                   "te", "te_bc")], 3)
+```
+
+For dependent person samples, `dependent_vcov()` provides the joint
+item parameter covariance for the `le_vcov` argument.
+
+## DIF detection
+
+`detect_dif()` flags items by root mean square deviation (RMSD)
+statistics or by per-item likelihood-ratio tests, optionally with
+iterative purification.
+
+```{r}
+dif <- detect_dif(cal, method = "rmsd")
+dif$flagged
+head(dif$rmsd)
+```
+
+The function groups and the references are listed in `?irtlink`.

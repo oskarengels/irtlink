@@ -1,0 +1,48 @@
+----------------------------------------------------------------
+                      CHANGELOG irtlink
+----------------------------------------------------------------
+
+
+----------------------------------------------------------------
+irtlink 0.1.0 (2026-10-06)
+----------------------------------------------------------------
+
+Initial release.
+
+ADDED * Internal marginal maximum likelihood EM calibration
+        (1PL, 2PL, 3PL): separate, concurrent (full or partial
+        invariance, with chain, joint, and restricted joint
+        compositions), fixed item parameter calibration (FIPC),
+        and regularized calibration with a smooth Bayesian
+        information criterion (SBIC).
+ADDED * Polytomous items via the generalized partial credit
+        model (GPCM) and the partial credit model (PCM) with
+        separate calibration, chain and pairwise joint linking
+        by every method, joint and pairwise Haberman linking,
+        jackknife and approximate jackknife linking errors,
+        EAP person scores, and a polytomous response simulator.
+ADDED * Linking via link_groups() (chain, joint, restricted
+        joint): mean-mean, mean-geometric mean, Haberman with
+        robust Lq loss, Haebara, and Stocking-Lord, each joint
+        method with a simultaneous and a pairwise variant, and a
+        selectable reference group. The Haebara and Stocking-Lord
+        criteria compare the full 3PL response functions when
+        guessing parameters are present.
+ADDED * Linking errors: (bias-corrected) delete-one item
+        jackknife, approximate one-step jackknife, and sandwich
+        estimators. A cluster argument deletes whole testlets
+        instead of single items in the jackknife and the
+        approximate jackknife.
+ADDED * Item parameter covariances, including dependent_vcov()
+        (stacked sandwich or person bootstrap) for dependent
+        person samples.
+ADDED * DIF diagnostics: root mean square deviation (RMSD)
+        statistics and per-item likelihood-ratio tests, with
+        iterative purification.
+ADDED * Person scores (expected a posteriori (EAP) and weighted
+        likelihood (WLE) estimates), a response data simulator
+        (uniform and non-uniform DIF, dependent person samples),
+        and a linking-design inspector.
+ADDED * Person sampling weights (pweights, e.g. senate weights)
+        in every calibration strategy.
+NOTE  * No runtime dependencies beyond base R and Rcpp.
