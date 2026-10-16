@@ -21,6 +21,14 @@ minimal dataset (a `sim_trend_data()` call with a seed is usually
 sufficient), the shortest script that triggers the issue on that
 dataset, and the output of `sessionInfo()`.
 
+## CRAN version `irtlink` 0.1.0 (2026-10-16)
+
+The official version of `irtlink` is hosted on CRAN and may be found [here](https://cran.r-project.org/package=irtlink). The CRAN version can be installed from within R using:
+
+```r
+utils::install.packages("irtlink")
+```
+
 #### GitHub version `irtlink` 0.1.0 (2026-10-06)
 
 [![](https://img.shields.io/badge/github%20version-0.1.0-orange.svg)](https://github.com/oskarengels/irtlink)
